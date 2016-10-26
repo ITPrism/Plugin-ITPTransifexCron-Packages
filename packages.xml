@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.4" type="plugin" group="itptransifexcron" method="upgrade">
+<extension version="3.6" type="plugin" group="itptransifexcron" method="upgrade">
     <name>PLG_ITPTRANSIFEXCRON_PACKAGES</name>
     <author>Todor Iliev</author>
-    <copyright>Copyright (C) 2015 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
-    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <copyright>Copyright (C) 2016 Todor Iliev ( ITPrism.com ). All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPLv3</license>
     <authorEmail>todor@itprism.com</authorEmail>
     <authorUrl>http://itprism.com</authorUrl>
-    <version>1.0</version>
-    <creationDate>02 September, 2015</creationDate>
+    <version>1.2</version>
+    <creationDate>26 October, 2016</creationDate>
     <description>
 	<![CDATA[
 	<p>This is CRON plug-in for ITPTransifex that downloads language files from Transifex and generates packages.</p>
 	<p><a href='http://itprism.com/' target='_blank'>Subscribe for the newsletter</a> to receive information about updates and new ITPrism extensions.</p>
 	<p>Please, <a href='http://extensions.joomla.org/extensions/extension/languages/language-edition/itp-transifex' target='_blank'>vote for the extension</a> on Joomla! Extensions Directory</p>
 	]]></description>
-   
-    
+
     <files>
         <filename plugin="packages">packages.php</filename>
 		<folder>language</folder>
@@ -23,6 +22,21 @@
     
     <help url="PLG_ITPTRANSIFEXCRON_PACKAGES_HELP_URL"/>
     
-    <config />
-		
+    <config>
+        <fields name="params">
+            <fieldset name="basic"  addfieldpath="/administrator/components/com_itptransifex/models/fields">
+                <field name="projects_ids" type="transifexproject"
+                       label="PLG_ITPTRANSIFEXCRON_PACKAGES_PROJECT"
+                       description="PLG_ITPTRANSIFEXCRON_PACKAGES_PROJECT_DESC"
+                       required="true"
+                       multiple="true"
+                       size="5"
+                       />
+            </fieldset>
+        </fields>
+    </config>
+
+    <updateservers>
+        <server type="extension" priority="1" name="ITPTransifexCron - Packages">http://cdn.itprism.com/updates/itptransifex/plg_itptransifexcronpackages.xml</server>
+    </updateservers>
 </extension>
