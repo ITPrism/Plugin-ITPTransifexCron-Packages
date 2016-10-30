@@ -31,7 +31,7 @@ class plgItptransifexCronPackages extends JPlugin
 
         // Prepare archives folders.
         $archiveFolder = JPath::clean(JPATH_ROOT . '/' . $params->get('archives_folder', 'tmp/archives'));
-        $errorsFolder = JPath::clean($archiveFolder.'/errors');
+        $errorsFolder  = JPath::clean($archiveFolder.'/errors');
         if (!JFolder::exists($archiveFolder)) {
             JFolder::create($archiveFolder);
         }
@@ -45,7 +45,7 @@ class plgItptransifexCronPackages extends JPlugin
 
         $package     = $this->getPackage($projectsIds, $params, $archiveFolder, $errorsFolder);
 
-        if ($package !== null and $package !== '') {
+        if ($package !== null and is_array($package) and count($package) > 0) {
             // Get project.
             $project = new Transifex\Project\Project(JFactory::getDbo());
             $project->load($package['project_id']);
@@ -56,13 +56,12 @@ class plgItptransifexCronPackages extends JPlugin
             }
 
             $options = array(
-                'username'        => $params->get('username'),
-                'password'        => $params->get('password'),
-                'url'             => $params->get('api_url'),
-                'cache_days'      => $params->get('cache_days', 7),
-                'tmp_path'        => $app->get('tmp_path'),
-                'archives_folder' => $archiveFolder,
-                'files_location'  => $params->get('files_location', 'extension_folders'),
+                'username'          => $params->get('username'),
+                'password'          => $params->get('password'),
+                'url'               => $params->get('api_url'),
+                'cache_days'        => $params->get('cache_days', 7),
+                'tmp_path'          => $app->get('tmp_path'),
+                'archives_folder'   => $archiveFolder,
                 'include_lang_name' => (bool)$params->get('include_lang_name', 1)
             );
 
@@ -96,7 +95,7 @@ class plgItptransifexCronPackages extends JPlugin
      */
     protected function getPackage($projectsIds, $params, $archiveFolder, $errorsFolder)
     {
-        $package = array();
+        $package   = array();
         $cacheDays = (int)$params->get('cache_days', 7);
         if (!$cacheDays) {
             $cacheDays = 7;
@@ -140,11 +139,12 @@ class plgItptransifexCronPackages extends JPlugin
             $errorFilePath = JPath::clean($errorsFolder.'/'.$result['filename'].'_'.$result['language'].'.zip');
 
             // Check for files that has occurred errors in the process of package generating.
+            // If the file exists, remove it and try to create a package again.
             if (JFile::exists($errorFilePath)) {
                 // Check for file with exceeded cache.
                 $pastDays = $this->getPastDays($filePath);
                 if ($pastDays > $cacheDays) {
-                    JFile::delete($filePath);
+                    JFile::delete($errorFilePath);
                     $package = $result;
                     break;
                 }
@@ -156,8 +156,8 @@ class plgItptransifexCronPackages extends JPlugin
             if (!JFile::exists($filePath)) {
                 $package = $result;
                 break;
-            } else {
-                // Check for file with exceeded cache.
+            } else { // The file exists.
+                // Check for exceeded cache.
                 $pastDays = $this->getPastDays($filePath);
                 if ($pastDays > $cacheDays) {
                     // Remove the old file.
